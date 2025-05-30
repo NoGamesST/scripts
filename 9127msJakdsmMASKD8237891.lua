@@ -425,8 +425,6 @@ end
 
 local function serverHop()
     saveSettings()
-
-    local serverst = {}
     local placeId = choosePlaceId()
     local cursor = nil
 
@@ -448,14 +446,12 @@ local function serverHop()
         cursor = data.nextPageCursor 
 
         for _, server in ipairs(data.data) do
-            if #serverst > 15 then break end
             if server.playing < server.maxPlayers and server.playing > 11 then
-                table.insert(serverst, server.id)
+                TPService:TeleportToPlaceInstance(placeId, server.id, Players.LocalPlayer)
                 return
             end
         end
-	TPService:TeleportToPlaceInstance(placeId, serverst[math.random(1,#serverst)], Players.LocalPlayer)
-    	task.wait(1)
+
     until not cursor
 
     warn("No available servers found.")
