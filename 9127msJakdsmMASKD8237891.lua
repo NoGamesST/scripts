@@ -350,7 +350,7 @@ local sValues = {
 }
 
   --Load Settings
-if isfile("plsdonatesettings.txt") then
+if isfile('plsdonate/'..game.Players.LocalPlayer.Name..'/plsdonatesettings.txt') then
 	local sl, er = pcall(function()
 		getgenv().settings = HttpService:JSONDecode(readfile('plsdonate/'..game.Players.LocalPlayer.Name..'/plsdonatesettings.txt'))
 	end)
