@@ -445,7 +445,7 @@ local function serverHop()
         end
 
         local data = game:GetService("HttpService"):JSONDecode(response.Body)
-        cursor = data.nextPageCursor Add commentMore actions
+        cursor = data.nextPageCursor
 
         for _, server in ipairs(data.data) do
             if #serverst > 15 then break end
