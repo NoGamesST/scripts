@@ -422,43 +422,73 @@ local function choosePlaceId()
         return 8737602449
     end
 end
-
-local function serverHop()
-    saveSettings()
-
-    local serverst = {}
-    local placeId = choosePlaceId()
-    local cursor = nil
-
-    repeat
-        local url = ("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Asc&limit=100%s")
-            :format(placeId, cursor and "&cursor="..cursor or "")
-
-        local response = httprequest({
-            Url = url,
-            Method = "GET"
-        })
-
-        if not response or response.StatusCode ~= 200 then
-            warn("Failed to fetch server list:", response and response.StatusMessage or "No response")
-            return
-        end
-
-        local data = game:GetService("HttpService"):JSONDecode(response.Body)
-        cursor = data.nextPageCursor 
-
-        for _, server in ipairs(data.data) do
-            if #serverst > 15 then break end
-            if server.playing < server.maxPlayers and server.playing > 11 then
-                table.insert(serverst, server.id)
-                return
+local PlaceID = choosePlaceId()
+local AllIDs = {}
+local foundAnything = ""
+local actualHour = os.date("!*t").hour
+local Deleted = false
+local File = pcall(function()
+    AllIDs = game:GetService('HttpService'):JSONDecode(readfile("NotSameServers.json"))
+end)
+if not File then
+    table.insert(AllIDs, actualHour)
+    writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+end
+function TPReturner()
+    local Site;
+    if foundAnything == "" then
+        Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'))
+    else
+        Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. foundAnything))
+    end
+    local ID = ""
+    if Site.nextPageCursor and Site.nextPageCursor ~= "null" and Site.nextPageCursor ~= nil then
+        foundAnything = Site.nextPageCursor
+    end
+    local num = 0;
+    for i,v in pairs(Site.data) do
+        local Possible = true
+        ID = tostring(v.id)
+        if tonumber(v.maxPlayers) > tonumber(v.playing) then
+            for _,Existing in pairs(AllIDs) do
+                if num ~= 0 then
+                    if ID == tostring(Existing) then
+                        Possible = false
+                    end
+                else
+                    if tonumber(actualHour) ~= tonumber(Existing) then
+                        local delFile = pcall(function()
+                            delfile("NotSameServers.json")
+                            AllIDs = {}
+                            table.insert(AllIDs, actualHour)
+                        end)
+                    end
+                end
+                num = num + 1
+            end
+            if Possible == true then
+                table.insert(AllIDs, ID)
+                wait()
+                pcall(function()
+                    writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+                    wait()
+                    game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceID, ID, game.Players.LocalPlayer)
+                end)
+                wait(4)
             end
         end
-	TPService:TeleportToPlaceInstance(placeId, serverst[math.random(1,#serverst)], Players.LocalPlayer)
-    	task.wait(1)
-    until not true
-
-    warn("No available servers found.")
+    end
+end
+local function serverHop()
+    saveSettings()
+    while wait() do
+        pcall(function()
+            TPReturner()
+            if foundAnything ~= "" then
+                TPReturner()
+            end
+        end)
+    end
 end
 
 
