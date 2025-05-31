@@ -373,14 +373,14 @@ if isfile('plsdonate/'..game.Players.LocalPlayer.Name..'/plsdonatesettings.txt')
 	end
 end
 
---[[if #getgenv().settings ~= sNames then
+if #getgenv().settings ~= sNames then
 	for i, v in ipairs(sNames) do
 		if getgenv().settings[v] == nil then
 			getgenv().settings[v] = sValues[i]
 		end
 	end
 	writefile('plsdonate/'..game.Players.LocalPlayer.Name..'/plsdonatesettings.txt', httpservice:JSONEncode(getgenv().settings))
-end]]
+end
 
 local settingsLock = true
 local AllIDs = {}
