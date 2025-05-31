@@ -455,8 +455,9 @@ local function serverHop()
                 return
             end
         end
-
+	print("attempting serverhop")
 	TPService:TeleportToPlaceInstance(placeId, serverst[math.random(1,#serverst)], Players.LocalPlayer)
+	print("serverhopped")
     	task.wait(1)
     until not true
 
