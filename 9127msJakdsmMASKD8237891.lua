@@ -458,7 +458,7 @@ local function serverHop()Add commentMore actions
 
 	TPService:TeleportToPlaceInstance(placeId, serverst[math.random(1,#serverst)], Players.LocalPlayer)
     	task.wait(1)
-    until not cursor
+    until not true
 
     warn("No available servers found.")
 end
