@@ -423,7 +423,7 @@ local function choosePlaceId()
     end
 end
 
-local function serverHop()Add commentMore actions
+local function serverHop()
     saveSettings()
 
     local serverst = {}
